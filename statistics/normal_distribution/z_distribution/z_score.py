@@ -33,24 +33,27 @@ print(f"样本量 n = {n}，样本均值 x̄ = {scores.mean():.2f}，"
 rest = scores[1:]     # 剔除小红自己，避免用她自己的分数给她定标尺
 
 refs = [
-    # (口径, 均值, 标准差, 是否该用 t 分布, 说明)
-    ("A 理论", mu, sigma, False, "整个年级，μ、σ 已知"),
-    ("B 样本", scores.mean(), scores.std(ddof=1), True, "本班 40 人，含小红自己"),
-    ("C 留一", rest.mean(), rest.std(ddof=1), True, "本班 39 人，剔除小红自己"),
+    # (口径, 均值, 标准差, df, 说明)
+    # df = None 表示用已知参数，走标准正态（真 z-score 的定义）
+    # df = n-1 是自由度，跟着"算出分母 s 的那批数据"走，而非小红
+    ("A 理论", mu, sigma, None, "整个年级，μ、σ 已知"),
+    ("B 样本", scores.mean(), scores.std(ddof=1), n - 1, "本班 40 人，含小红自己"),
+    ("C 留一", rest.mean(), rest.std(ddof=1), len(rest) - 1, "本班 39 人，剔除小红自己"),
 ]
 
 print("z = (x - 参照均值) / 参照标准差，P 由累积分布函数算出")
 results = []
-for name, m, s, use_t, desc in refs:
+for name, m, s, df, desc in refs:
     z_ref = (x - m) / s
-    if use_t:
-        # 用样本的 x̄、s 代替真参数时，(x - x̄)/s 服从 t 分布而非正态
-        p_ref = stats.t.cdf(z_ref, n - 1)
-        how = f"t.cdf(df={n - 1})"
-    else:
+    if df is None:
         # 参数已知时 (x - μ)/σ 严格服从标准正态，这是 z-score 的定义
-        p_ref = stats.norm.cdf(z_ref)
+        # 求的是 标准正态分布中 z_ref 左侧的累积概率 ，也就是曲线下、`z_ref` 左边的面积
+        p_ref = stats.norm.cdf(z_ref) # p_ref = P(Z <= z_ref)
         how = "norm.cdf"
+    else:
+        # 用样本的 x̄、s 代替真参数时，(x - x̄)/s 服从 t 分布而非正态
+        p_ref = stats.t.cdf(z_ref, df) # p_ref = P(T <= z_ref)
+        how = f"t.cdf(df={df})"
     results.append((name, m, s, z_ref, p_ref, desc))
     print(f"{name}  μ={m:6.2f}, σ={s:5.2f}  z={z_ref:+.3f}  "
           f"低于小红 {p_ref:6.2%}  高于小红 {1 - p_ref:6.2%}  "
@@ -58,7 +61,7 @@ for name, m, s, use_t, desc in refs:
 
 # 画图仍以理论口径为准
 z = results[0][3]
-p_lower = results[0][4]
+p_lower = results[0][4] # p_ref = P(Z <= z_ref)
 
 # ============================================================
 # 第 3 步：拿全班 40 人的真实成绩验证，看哪套参照系更贴合
@@ -109,7 +112,7 @@ plt.plot(xs, stats.norm.pdf(xs, mu, sigma), 'r-', linewidth=2,
 
 # 用全班数据拟合的曲线（口径 B），它比理论曲线更偏左更矮，
 # 两条曲线的错位就是"参照系不匹配"在图上长什么样
-s_mean, s_std = scores.mean(), scores.std(ddof=1)
+s_mean, s_std = scores.mean(), scores.std(ddof=1) # 贝塞尔校正
 plt.plot(xs, stats.norm.pdf(xs, s_mean, s_std), color='gray', linestyle='--',
          linewidth=1.5, label=f'本班拟合 N(均值={s_mean:.1f}, s={s_std:.1f})')
 

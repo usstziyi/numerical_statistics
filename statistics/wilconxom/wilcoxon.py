@@ -1,6 +1,6 @@
 import numpy as np
 import os
-from scipy.stats import wilcoxon
+from scipy.stats import wilcoxon # 威尔科克森符号秩检验
 import matplotlib.pyplot as plt
 
 # 模拟配对样本：同一批受试者治疗前后

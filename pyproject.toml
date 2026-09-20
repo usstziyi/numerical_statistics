@@ -6,14 +6,18 @@ readme = "README.md"
 authors = [
     { name = "007", email = "007lookworld@gmail.com" }
 ]
-requires-python = ">=3.14"
+requires-python = ">=3.12"
 dependencies = [
     "matplotlib>=3.11.2",
-    "numpy>=2.5.3",
+    "numpy>=1.26.4",
     "sacrebleu>=2.6.0",
-    "scipy>=1.18.1",
-    "seaborn>=0.13.2",
+    "scipy>=1.17.1",
+    "setuptools<81",
+    "torch>=2.14.0",
+    "unbabel-comet>=2.2.7",
 ]
+
+
 
 [project.scripts]
 numerical-statistics = "numerical_statistics:main"

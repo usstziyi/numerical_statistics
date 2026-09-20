@@ -13,6 +13,7 @@ dependencies = [
     "matplotlib>=3.11.2",
     "nltk>=3.10.3",
     "numpy>=1.26.4",
+    "rouge-score>=0.1.2",
     "sacrebleu>=2.6.0",
     "scikit-learn>=1.9.1",
     "scipy>=1.17.1",

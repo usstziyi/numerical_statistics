@@ -43,6 +43,10 @@ references = [
 ]
 
 
+# sources = ["Dem Feuer konnte Einhalt geboten werden", "Schulen und Kindergärten wurden eröffnet."]
+# hypotheses = ["The fire could be stopped", "Schools and kindergartens were open"]
+# references = ["They were able to control the fire.", "Schools and kindergartens opened"]
+
 
 # =====================================================
 # 2. 下载 COMET 模型
